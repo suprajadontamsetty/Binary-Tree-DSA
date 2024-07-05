@@ -24,24 +24,24 @@ int main()
         system("cls");
         switch (input)
         {
-        case 1: cout << " Enter Number to be inserted : ";
+        case 1: 
+            cout << " Enter Number to be inserted : ";
             cin >> insert;
             b.insert(insert);
             break;
-        case 2: cout << endl;
-
+        case 2: 
+            cout << endl;
             cout << " Printing " << endl;
             cout << " --------------------" << endl;
             b.print_postorder();
-
             break;
-        case 3: cout << " Enter data to be deleted : ";
+        case 3: 
+            cout << " Enter data to be deleted : ";
             cin >> del;
             b.remove(del);
             break;
         case 4:
             return 0;
-
         }
     }
 }

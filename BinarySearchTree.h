@@ -1,26 +1,30 @@
-#pragma once
-#include <cstddef>
-class BinarySearchTree
-{
-private:
-    struct tree_node
-    {
-        tree_node* left;
-        tree_node* right;
-        int data;
-    };
-    tree_node* root;
+#ifndef BINARYSEARCHTREE_H
+#define BINARYSEARCHTREE_H
 
+class BinarySearchTree {
 public:
-    BinarySearchTree()
-    {
-        root = NULL;
-    }
+    BinarySearchTree();
+    ~BinarySearchTree();
 
-    bool isEmpty() const { return root == NULL; }
+    void insert(int value);
+    void remove(int value);
     void print_postorder();
-    void postorder(tree_node*, int indent);
-    void insert(int);
-    void remove(int);
+
+private:
+    struct Node {
+        int data;
+        Node* left;
+        Node* right;
+
+        Node(int val) : data(val), left(nullptr), right(nullptr) {}
+    };
+
+    Node* root;
+
+    void insert(Node*& node, int value);
+    void remove(Node*& node, int value);
+    void print_postorder(Node* node);
+    void delete_tree(Node* node);
 };
 
+#endif // BINARYSEARCHTREE_H

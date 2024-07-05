@@ -1,162 +1,82 @@
 #include "BinarySearchTree.h"
 #include <iostream>
-#include<iomanip>
-using namespace std;
 
-void BinarySearchTree::insert(int val)
-{
-    tree_node* newNode = new tree_node;
-    newNode->data = val;
-    newNode->left = nullptr;
-    newNode->right = nullptr;
+BinarySearchTree::BinarySearchTree() : root(nullptr) {}
 
-    if (isEmpty())
-    {
-        root = newNode;
-    }
-    else
-    {
-        tree_node* current = root;
-        tree_node* parent = nullptr;
-
-        while (current)
-        {
-            parent = current;
-            if (val < current->data)
-                current = current->left;
-            else
-                current = current->right;
-        }
-
-        if (parent != nullptr) // Check if parent is not null
-        {
-            if (val < parent->data)
-            {
-                parent->left = newNode;
-            }
-            else
-            {
-                parent->right = newNode;
-            }
-        }
-        else
-        {
-            // If parent is null, newNode becomes the root
-            root = newNode;
-        }
-    }
-
+BinarySearchTree::~BinarySearchTree() {
+    delete_tree(root);
 }
 
+void BinarySearchTree::insert(int value) {
+    insert(root, value);
+}
 
+void BinarySearchTree::remove(int value) {
+    remove(root, value);
+}
 
-void BinarySearchTree::remove(int val)
-{
-    bool found = false;
-    if (isEmpty())
-    {
-        cout << "This Tree is empty!" << endl;
-        return;
-    }
+void BinarySearchTree::print_postorder() {
+    print_postorder(root);
+    std::cout << std::endl;
+}
 
-    tree_node* curr, * parent;
-    curr = root;
-    parent = nullptr;
-
-    // Locate the node to be deleted and its parent
-    while (curr != nullptr)
-    {
-        if (curr->data == val)
-        {
-            found = true;
-            break;
-        }
-        else
-        {
-            parent = curr;
-            if (val > curr->data)
-                curr = curr->right;
-            else
-                curr = curr->left;
-        }
-    }
-
-    if (!found)
-    {
-        cout << "Data not found!" << endl;
-        return;
-    }
-
-    // Case 1: Node with only one child or no child
-    if (curr->left == nullptr || curr->right == nullptr)
-    {
-        tree_node* temp = (curr->left != nullptr) ? curr->left : curr->right;
-
-        // No child case
-        if (temp == nullptr)
-        {
-            if (parent == nullptr)
-                root = nullptr; 
-            else if (curr == parent->left)
-                parent->left = nullptr;
-            else
-                parent->right = nullptr;
-            delete curr;
-        }
-        else // One child case
-        {
-            if (parent == nullptr)
-                root = temp;
-            else if (curr == parent->left)
-                parent->left = temp;
-            else
-                parent->right = temp;
-            delete curr;
-        }
-    }
-    else // Case 2: Node with two children
-    {
-        tree_node* successor = curr->right;
-        tree_node* successorParent = nullptr;
-
-        while (successor->left != nullptr)
-        {
-            successorParent = successor;
-            successor = successor->left;
-        }
-
-        // Copy the inorder successor's data to this node
-        curr->data = successor->data;
-
-        // Delete the inorder successor
-        if (successorParent != nullptr)
-            successorParent->left = nullptr;
-        else
-            curr->right = nullptr;
-
-        delete successor;
+void BinarySearchTree::insert(Node*& node, int value) {
+    if (node == nullptr) {
+        node = new Node(value);
+    } else if (value < node->data) {
+        insert(node->left, value);
+    } else {
+        insert(node->right, value);
     }
 }
 
-void BinarySearchTree::print_postorder()
-{
-    postorder(root, 0);
-}
+void BinarySearchTree::remove(Node*& node, int value) {
+    if (node == nullptr) return;
 
-void BinarySearchTree::postorder(tree_node* p, int indent)
-    {
-        if (p != NULL) {
-            if (p->right) {
-                postorder(p->right, indent + 6);
+    if (value < node->data) {
+        remove(node->left, value);
+    } else if (value > node->data) {
+        remove(node->right, value);
+    } else {
+        Node* temp = nullptr;
+        if (node->left == nullptr) {
+            temp = node->right;
+            delete node;
+            node = temp;
+        } else if (node->right == nullptr) {
+            temp = node->left;
+            delete node;
+            node = temp;
+        } else {
+            Node* succParent = node->right;
+            Node* succ = node->right;
+            while (succ->left != nullptr) {
+                succParent = succ;
+                succ = succ->left;
             }
-            if (indent) {
-                std::cout << std::setw(indent) << ' ';
+            if (succParent != node) {
+                succParent->left = succ->right;
+            } else {
+                succParent->right = succ->right;
             }
-            if (p->right) std::cout << "   /\n" << std::setw(indent) ;
-            std::cout << p->data << "\n";
-            if (p->left) {
-                std::cout << setw(indent) << ' ' << "  \\\n";
-                postorder(p->left, indent + 6);
-            }
+            node->data = succ->data;
+            delete succ;
         }
     }
+}
+
+void BinarySearchTree::print_postorder(Node* node) {
+    if (node == nullptr) return;
+
+    print_postorder(node->left);
+    print_postorder(node->right);
+    std::cout << node->data << " ";
+}
+
+void BinarySearchTree::delete_tree(Node* node) {
+    if (node == nullptr) return;
+
+    delete_tree(node->left);
+    delete_tree(node->right);
+    delete node;
+}
